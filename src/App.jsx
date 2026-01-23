@@ -83,19 +83,10 @@ export default React.memo(function ReplicadApp() {
         <Viewer />
         <Footer>
           <a
-            href="https://github.com/sgenoud/replicad-hsw-generator"
+            href="https://github.com/teslaproduuction/hsw-generator"
             target="_blank"
           >
             GitHub
-          </a>
-          <a href="mailto:steve@sgenoud.com" target="_blank">
-            Email
-          </a>
-          <a href="https://carrots.sgenoud.com/" target="_blank">
-            Blog
-          </a>
-          <a href="https://toot.cafe/@stevegenoud" target="_blank">
-            Mastodon
           </a>
         </Footer>
       </Main>
