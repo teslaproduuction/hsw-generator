@@ -40,6 +40,8 @@ const AppState = types
             disableRight: types.optional(types.boolean, false),
             disableTop: types.optional(types.boolean, false),
             disableBottom: types.optional(types.boolean, false),
+            roundedCorners: types.optional(types.boolean, true),
+            fillFlatFaces: types.optional(types.boolean, true),
           }),
           {}
         ),
@@ -65,7 +67,7 @@ const AppState = types
       self.config.rows = rows;
       self.config.columns = columns;
     },
-    updateProfile({ disableLeft, disableRight, disableTop, disableBottom }) {
+    updateProfile({ disableLeft, disableRight, disableTop, disableBottom, roundedCorners, fillFlatFaces }) {
       if (disableLeft !== undefined)
         self.config.profileConfig.disableLeft = disableLeft;
       if (disableRight !== undefined)
@@ -74,6 +76,10 @@ const AppState = types
         self.config.profileConfig.disableTop = disableTop;
       if (disableBottom !== undefined)
         self.config.profileConfig.disableBottom = disableBottom;
+      if (roundedCorners !== undefined)
+        self.config.profileConfig.roundedCorners = roundedCorners;
+      if (fillFlatFaces !== undefined)
+        self.config.profileConfig.fillFlatFaces = fillFlatFaces;
     },
 
     process: flow(function* process() {
