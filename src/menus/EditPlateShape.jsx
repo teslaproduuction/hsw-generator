@@ -16,6 +16,26 @@ export default observer(
       state.config.profileConfig.disableBottom
     );
 
+    const updateLeft = (value) => {
+      setLeft(value);
+      state.updateProfile({ disableLeft: value });
+    };
+
+    const updateRight = (value) => {
+      setRight(value);
+      state.updateProfile({ disableRight: value });
+    };
+
+    const updateTop = (value) => {
+      setTop(value);
+      state.updateProfile({ disableTop: value });
+    };
+
+    const updateBottom = (value) => {
+      setBottom(value);
+      state.updateProfile({ disableBottom: value });
+    };
+
     useImperativeHandle(ref, () => {
       return {
         saveChanges: () => {
@@ -41,7 +61,7 @@ export default observer(
             id="left"
             type="checkbox"
             checked={left}
-            onChange={(e) => setLeft(e.target.checked)}
+            onChange={(e) => updateLeft(e.target.checked)}
           />
           <label htmlFor="left">Left</label>
         </BaseInline>
@@ -50,7 +70,7 @@ export default observer(
             id="top"
             type="checkbox"
             checked={top}
-            onChange={(e) => setTop(e.target.checked)}
+            onChange={(e) => updateTop(e.target.checked)}
           />
           <label htmlFor="top">Top</label>
         </BaseInline>
@@ -59,7 +79,7 @@ export default observer(
             id="right"
             type="checkbox"
             checked={right}
-            onChange={(e) => setRight(e.target.checked)}
+            onChange={(e) => updateRight(e.target.checked)}
           />
           <label htmlFor="right">Right</label>
         </BaseInline>
@@ -68,7 +88,7 @@ export default observer(
             id="bottom"
             type="checkbox"
             checked={bottom}
-            onChange={(e) => setBottom(e.target.checked)}
+            onChange={(e) => updateBottom(e.target.checked)}
           />
           <label htmlFor="bottom">Bottom</label>
         </BaseInline>
