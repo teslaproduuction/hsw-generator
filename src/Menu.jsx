@@ -4,7 +4,7 @@ import { observer } from "mobx-react";
 import useAppState from "./useAppState";
 
 import { IconButton, IconGroup } from "./components/buttons.jsx";
-import download from "./download";
+import download, { downloadSTL, downloadSTEP } from "./download";
 
 import UndoIcon from "./icons/Undo";
 import RedoIcon from "./icons/Redo";
@@ -49,6 +49,48 @@ const DownloadButton = observer(() => {
   );
 });
 
+const DownloadSTLButton = observer(() => {
+  const state = useAppState();
+  const [loading, setLoading] = useState(false);
+
+  const dl = async () => {
+    setLoading(true);
+    try {
+      await downloadSTL(state.currentValues);
+    } catch (e) {
+      console.error(e);
+    }
+    setLoading(false);
+  };
+
+  return (
+    <IconButton disabled={!state.shapeLoaded || state.processing} onClick={dl}>
+      {loading ? <LoadingIcon size="1.5em" /> : "STL"}
+    </IconButton>
+  );
+});
+
+const DownloadSTEPButton = observer(() => {
+  const state = useAppState();
+  const [loading, setLoading] = useState(false);
+
+  const dl = async () => {
+    setLoading(true);
+    try {
+      await downloadSTEP(state.currentValues);
+    } catch (e) {
+      console.error(e);
+    }
+    setLoading(false);
+  };
+
+  return (
+    <IconButton disabled={!state.shapeLoaded || state.processing} onClick={dl}>
+      {loading ? <LoadingIcon size="1.5em" /> : "STEP"}
+    </IconButton>
+  );
+});
+
 export default observer(() => {
   const state = useAppState();
   const [selected, setSelected] = useState("rowsAndCols");
@@ -70,7 +112,10 @@ export default observer(() => {
             <RedoIcon />
           </IconButton>
         </IconGroup>
-        <DownloadButton />
+        <IconGroup>
+          <DownloadSTLButton />
+          <DownloadSTEPButton />
+        </IconGroup>
       </EditButtons>
       <select
         id="type-select"
