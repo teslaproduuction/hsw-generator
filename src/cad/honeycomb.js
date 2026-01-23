@@ -46,22 +46,23 @@ const drawOusideRectangle = (
     disableRight = false,
     disableTop = false,
     disableBottom = false,
+    roundedCorners = true,
   } = {}
 ) => {
   const radius = 5;
   const pen = draw([-(width / 2), -height / 2]).hLine(width);
-  if (disableBottom && disableRight) {
+  if (disableBottom && disableRight && roundedCorners) {
     pen.customCorner(radius);
   }
   pen.vLine(height);
-  if (disableTop && disableRight) {
+  if (disableTop && disableRight && roundedCorners) {
     pen.customCorner(radius);
   }
   pen.hLine(-width);
-  if (disableTop && disableLeft) {
+  if (disableTop && disableLeft && roundedCorners) {
     pen.customCorner(radius);
   }
-  if (disableBottom && disableLeft) {
+  if (disableBottom && disableLeft && roundedCorners) {
     return pen.closeWithCustomCorner(radius);
   }
   return pen.close();
@@ -77,6 +78,7 @@ export const exteriorProfile = (
     disableRight = false,
     disableTop = false,
     disableBottom = false,
+    roundedCorners = true,
   } = {}
 ) => {
   const structure = new HoneycombStructure(radius);
@@ -84,7 +86,7 @@ export const exteriorProfile = (
   let base = drawOusideRectangle(
     structure.totalWidth(nColumns),
     structure.totalHeight(nRows),
-    { disableBottom, disableLeft, disableRight, disableTop }
+    { disableBottom, disableLeft, disableRight, disableTop, roundedCorners }
   );
 
   const columnCutouts = range(nRows + 2)
@@ -170,6 +172,8 @@ export function preview({ columns, rows, profileConfig }, { width, height }) {
 }
 
 export default function honeycomb({ rows, columns, profileConfig }) {
+  const { fillFlatFaces = true } = profileConfig;
+
   const outsideProfile = exteriorProfile(
     OUTER_RADIUS,
     drawPolysides(OUTER_RADIUS, 6, 0).rotate(30),
@@ -198,17 +202,21 @@ export default function honeycomb({ rows, columns, profileConfig }) {
 
   const inside = honeycombClone(cell, rows, columns, OUTER_RADIUS);
 
-  const topFinder = new EdgeFinder().inPlane("XY", HEIGHT);
-  const top = makeFace(
-    outsideTop,
-    inside.map((copy) => assembleWire(topFinder.find(copy)))
-  );
+  if (fillFlatFaces) {
+    const topFinder = new EdgeFinder().inPlane("XY", HEIGHT);
+    const top = makeFace(
+      outsideTop,
+      inside.map((copy) => assembleWire(topFinder.find(copy)))
+    );
 
-  const bottomFinder = new EdgeFinder().inPlane("XY");
-  const bottom = makeFace(
-    outsideBottom,
-    inside.map((copy) => assembleWire(bottomFinder.find(copy)))
-  );
+    const bottomFinder = new EdgeFinder().inPlane("XY");
+    const bottom = makeFace(
+      outsideBottom,
+      inside.map((copy) => assembleWire(bottomFinder.find(copy)))
+    );
 
-  return makeSolid([outside, top, bottom, ...inside]);
+    return makeSolid([outside, top, bottom, ...inside]);
+  } else {
+    return makeSolid([outside, ...inside]);
+  }
 }

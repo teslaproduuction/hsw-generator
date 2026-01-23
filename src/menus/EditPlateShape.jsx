@@ -15,6 +15,12 @@ export default observer(
     const [bottom, setBottom] = useState(
       state.config.profileConfig.disableBottom
     );
+    const [roundedCorners, setRoundedCorners] = useState(
+      state.config.profileConfig.roundedCorners
+    );
+    const [fillFlatFaces, setFillFlatFaces] = useState(
+      state.config.profileConfig.fillFlatFaces
+    );
 
     useImperativeHandle(ref, () => {
       return {
@@ -24,6 +30,8 @@ export default observer(
             disableRight: right,
             disableTop: top,
             disableBottom: bottom,
+            roundedCorners,
+            fillFlatFaces,
           };
 
           state.updateProfile(changes);
@@ -71,6 +79,32 @@ export default observer(
             onChange={(e) => setBottom(e.target.checked)}
           />
           <label htmlFor="bottom">Bottom</label>
+        </BaseInline>
+
+        <InputTitle as="div" style={{ marginTop: "2em" }}>
+          Corner style
+        </InputTitle>
+        <BaseInline>
+          <input
+            id="roundedCorners"
+            type="checkbox"
+            checked={roundedCorners}
+            onChange={(e) => setRoundedCorners(e.target.checked)}
+          />
+          <label htmlFor="roundedCorners">Rounded corners</label>
+        </BaseInline>
+
+        <InputTitle as="div" style={{ marginTop: "2em" }}>
+          Faces
+        </InputTitle>
+        <BaseInline>
+          <input
+            id="fillFlatFaces"
+            type="checkbox"
+            checked={fillFlatFaces}
+            onChange={(e) => setFillFlatFaces(e.target.checked)}
+          />
+          <label htmlFor="fillFlatFaces">Fill flat faces</label>
         </BaseInline>
       </>
     );
