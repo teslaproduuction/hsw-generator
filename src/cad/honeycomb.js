@@ -79,7 +79,6 @@ export const exteriorProfile = (
     disableTop = false,
     disableBottom = false,
     roundedCorners = true,
-    fillFlatFaces = true,
   } = {}
 ) => {
   const structure = new HoneycombStructure(radius);
@@ -89,13 +88,6 @@ export const exteriorProfile = (
     structure.totalHeight(nRows),
     { disableBottom, disableLeft, disableRight, disableTop, roundedCorners }
   );
-
-  // When fillFlatFaces is false, don't cut borders at all - let the rectangle trim the hexagons
-  // When fillFlatFaces is true, cut only non-flat borders
-  const shouldCutLeft = fillFlatFaces && !disableLeft;
-  const shouldCutRight = fillFlatFaces && !disableRight;
-  const shouldCutTop = fillFlatFaces && !disableTop;
-  const shouldCutBottom = fillFlatFaces && !disableBottom;
 
   const columnCutouts = range(nRows + 2)
     .map((i) => cutout.clone().translate(0, i * structure.hexInnerLength))
@@ -107,13 +99,13 @@ export const exteriorProfile = (
         structure.displacement;
 
       const cutouts = [];
-      if (shouldCutLeft) {
+      if (!disableLeft) {
         const leftCut = cell
           .clone()
           .translate(-xDisplacement, -structure.hexInnerLength / 2);
         cutouts.push(leftCut);
       }
-      if (shouldCutRight) {
+      if (!disableRight) {
         const rightCut = cell
           .clone()
           .translate(
@@ -139,7 +131,7 @@ export const exteriorProfile = (
     )
     .flatMap((cell) => {
       const cutouts = [];
-      if (shouldCutBottom) {
+      if (!disableBottom) {
         const bottomCut = cell.translate(
           -structure.displacement,
           -structure.totalHeight(nRows) / 2
@@ -147,7 +139,7 @@ export const exteriorProfile = (
         cutouts.push(bottomCut);
       }
 
-      if (shouldCutTop) {
+      if (!disableTop) {
         const topCut = cell.translate(0, structure.totalHeight(nRows) / 2);
         cutouts.push(topCut);
       }
