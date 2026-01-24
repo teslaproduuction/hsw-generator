@@ -42,6 +42,8 @@ const AppState = types
             disableBottom: types.optional(types.boolean, false),
             roundedCorners: types.optional(types.boolean, true),
             fillFlatFaces: types.optional(types.boolean, true),
+            enableBase: types.optional(types.boolean, false),
+            baseThickness: types.optional(types.number, 0.8),
           }),
           {}
         ),
@@ -67,7 +69,7 @@ const AppState = types
       self.config.rows = rows;
       self.config.columns = columns;
     },
-    updateProfile({ disableLeft, disableRight, disableTop, disableBottom, roundedCorners, fillFlatFaces }) {
+    updateProfile({ disableLeft, disableRight, disableTop, disableBottom, roundedCorners, fillFlatFaces, enableBase, baseThickness }) {
       if (disableLeft !== undefined)
         self.config.profileConfig.disableLeft = disableLeft;
       if (disableRight !== undefined)
@@ -80,6 +82,10 @@ const AppState = types
         self.config.profileConfig.roundedCorners = roundedCorners;
       if (fillFlatFaces !== undefined)
         self.config.profileConfig.fillFlatFaces = fillFlatFaces;
+      if (enableBase !== undefined)
+        self.config.profileConfig.enableBase = enableBase;
+      if (baseThickness !== undefined)
+        self.config.profileConfig.baseThickness = baseThickness;
     },
 
     process: flow(function* process() {
