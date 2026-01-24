@@ -204,7 +204,7 @@ export default function honeycomb({ rows, columns, profileConfig }) {
 
   let mainStructure;
   if (fillFlatFaces) {
-    // Closed mode: with top and bottom faces
+    // Filled mode: create large top/bottom faces that fill spaces between hexagons
     const topFinder = new EdgeFinder().inPlane("XY", HEIGHT);
     const top = makeFace(
       outsideTop,
@@ -219,12 +219,10 @@ export default function honeycomb({ rows, columns, profileConfig }) {
 
     mainStructure = makeSolid([outside, top, bottom, ...inside]);
   } else {
-    // Open mode: fuse outer wall with honeycomb cells
-    // Start with outer wall and fuse all cells
-    mainStructure = outside;
-    inside.forEach(cell => {
-      mainStructure = mainStructure.fuse(cell);
-    });
+    // Open mode: NO large filling faces, only small top/bottom for outer wall
+    // Each hexagon has its own top/bottom (from sweepSketch)
+    // The spaces between hexagons remain open
+    mainStructure = makeSolid([outside, outsideBottom, outsideTop, ...inside]);
   }
 
   if (enableBase && baseThickness > 0) {
