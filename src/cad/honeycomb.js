@@ -79,7 +79,6 @@ export const exteriorProfile = (
     disableTop = false,
     disableBottom = false,
     roundedCorners = true,
-    fillFlatFaces = true,
   } = {}
 ) => {
   const structure = new HoneycombStructure(radius);
@@ -90,70 +89,68 @@ export const exteriorProfile = (
     { disableBottom, disableLeft, disableRight, disableTop, roundedCorners }
   );
 
-  // Only create edge cutouts if fillFlatFaces is false (edges with hexagon cutouts)
-  if (!fillFlatFaces) {
-    const columnCutouts = range(nRows + 2)
-      .map((i) => cutout.clone().translate(0, i * structure.hexInnerLength))
-      .map((cell) => cell.translate(0, -structure.totalHeight(nRows + 1) / 2))
-      .flatMap((cell) => {
-        const xDisplacement =
-          structure.totalWidth(nColumns - 1) / 2 -
-          structure.hexSideLength / 4 +
-          structure.displacement;
+  // Always create edge cutouts (unless edges are disabled)
+  const columnCutouts = range(nRows + 2)
+    .map((i) => cutout.clone().translate(0, i * structure.hexInnerLength))
+    .map((cell) => cell.translate(0, -structure.totalHeight(nRows + 1) / 2))
+    .flatMap((cell) => {
+      const xDisplacement =
+        structure.totalWidth(nColumns - 1) / 2 -
+        structure.hexSideLength / 4 +
+        structure.displacement;
 
-        const cutouts = [];
-        if (!disableLeft) {
-          const leftCut = cell
-            .clone()
-            .translate(-xDisplacement, -structure.hexInnerLength / 2);
-          cutouts.push(leftCut);
-        }
-        if (!disableRight) {
-          const rightCut = cell
-            .clone()
-            .translate(
-              xDisplacement,
-              nColumns % 2 ? structure.hexInnerLength / 2 : 0
-            );
-          cutouts.push(rightCut);
-        }
-
-        return cutouts;
-      });
-    columnCutouts.forEach((cutout) => {
-      base = base.cut(cutout);
-    });
-
-    const rowCutouts = range(nColumns + 1)
-      .map((i) => cutout.clone().translate(2 * i * structure.displacement))
-      .map((cell) =>
-        cell.translate(
-          -structure.totalWidth(nColumns - 1) / 2 + structure.hexSideLength / 4,
-          0
-        )
-      )
-      .flatMap((cell) => {
-        const cutouts = [];
-        if (!disableBottom) {
-          const bottomCut = cell.translate(
-            -structure.displacement,
-            -structure.totalHeight(nRows) / 2
+      const cutouts = [];
+      if (!disableLeft) {
+        const leftCut = cell
+          .clone()
+          .translate(-xDisplacement, -structure.hexInnerLength / 2);
+        cutouts.push(leftCut);
+      }
+      if (!disableRight) {
+        const rightCut = cell
+          .clone()
+          .translate(
+            xDisplacement,
+            nColumns % 2 ? structure.hexInnerLength / 2 : 0
           );
-          cutouts.push(bottomCut);
-        }
+        cutouts.push(rightCut);
+      }
 
-        if (!disableTop) {
-          const topCut = cell.translate(0, structure.totalHeight(nRows) / 2);
-          cutouts.push(topCut);
-        }
-
-        return cutouts;
-      });
-
-    rowCutouts.forEach((cutout) => {
-      base = base.cut(cutout);
+      return cutouts;
     });
-  }
+  columnCutouts.forEach((cutout) => {
+    base = base.cut(cutout);
+  });
+
+  const rowCutouts = range(nColumns + 1)
+    .map((i) => cutout.clone().translate(2 * i * structure.displacement))
+    .map((cell) =>
+      cell.translate(
+        -structure.totalWidth(nColumns - 1) / 2 + structure.hexSideLength / 4,
+        0
+      )
+    )
+    .flatMap((cell) => {
+      const cutouts = [];
+      if (!disableBottom) {
+        const bottomCut = cell.translate(
+          -structure.displacement,
+          -structure.totalHeight(nRows) / 2
+        );
+        cutouts.push(bottomCut);
+      }
+
+      if (!disableTop) {
+        const topCut = cell.translate(0, structure.totalHeight(nRows) / 2);
+        cutouts.push(topCut);
+      }
+
+      return cutouts;
+    });
+
+  rowCutouts.forEach((cutout) => {
+    base = base.cut(cutout);
+  });
 
   return base;
 };
@@ -186,7 +183,7 @@ export function preview({ columns, rows, profileConfig }, { width, height }) {
 }
 
 export default function honeycomb({ rows, columns, profileConfig }) {
-  const { enableBase = false, baseThickness = 0.8 } = profileConfig;
+  const { fillFlatFaces = true, enableBase = false, baseThickness = 0.8 } = profileConfig;
 
   const outsideProfile = exteriorProfile(
     OUTER_RADIUS,
@@ -216,20 +213,26 @@ export default function honeycomb({ rows, columns, profileConfig }) {
 
   const inside = honeycombClone(cell, rows, columns, OUTER_RADIUS);
 
-  // Always create large top/bottom faces that fill spaces between hexagons
-  const topFinder = new EdgeFinder().inPlane("XY", HEIGHT);
-  const top = makeFace(
-    outsideTop,
-    inside.map((copy) => assembleWire(topFinder.find(copy)))
-  );
+  let mainStructure;
+  if (fillFlatFaces) {
+    // Create large top/bottom faces that fill spaces between hexagons
+    const topFinder = new EdgeFinder().inPlane("XY", HEIGHT);
+    const top = makeFace(
+      outsideTop,
+      inside.map((copy) => assembleWire(topFinder.find(copy)))
+    );
 
-  const bottomFinder = new EdgeFinder().inPlane("XY");
-  const bottom = makeFace(
-    outsideBottom,
-    inside.map((copy) => assembleWire(bottomFinder.find(copy)))
-  );
+    const bottomFinder = new EdgeFinder().inPlane("XY");
+    const bottom = makeFace(
+      outsideBottom,
+      inside.map((copy) => assembleWire(bottomFinder.find(copy)))
+    );
 
-  const mainStructure = makeSolid([outside, top, bottom, ...inside]);
+    mainStructure = makeSolid([outside, top, bottom, ...inside]);
+  } else {
+    // Don't fill spaces - only build outer wall, hexagons keep their own caps
+    mainStructure = makeSolid([outside, outsideBottom, outsideTop, ...inside]);
+  }
 
   if (enableBase && baseThickness > 0) {
     // Use the same profile as the main structure to match edges and corners
