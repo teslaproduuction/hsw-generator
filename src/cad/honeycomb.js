@@ -230,8 +230,9 @@ export default function honeycomb({ rows, columns, profileConfig }) {
 
     mainStructure = makeSolid([outside, top, bottom, ...inside]);
   } else {
-    // Don't fill spaces - only build outer wall, hexagons keep their own caps
-    mainStructure = makeSolid([outside, outsideBottom, outsideTop, ...inside]);
+    // Don't fill spaces - just fuse all hexagons together
+    // Each hexagon already has its own top/bottom caps from sweepSketch
+    mainStructure = inside.reduce((acc, hex) => acc.fuse(hex));
   }
 
   if (enableBase && baseThickness > 0) {
