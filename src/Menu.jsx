@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { observer } from "mobx-react";
 import useAppState from "./useAppState";
+import { useTranslation } from "./i18n/LanguageContext";
 
 import { IconButton, IconGroup } from "./components/buttons.jsx";
 import download, { downloadSTL, downloadSTEP } from "./download";
@@ -93,6 +94,7 @@ const DownloadSTEPButton = observer(() => {
 
 export default observer(() => {
   const state = useAppState();
+  const { t } = useTranslation();
   const [selected, setSelected] = useState("rowsAndCols");
 
   return (
@@ -102,12 +104,14 @@ export default observer(() => {
           <IconButton
             disabled={!state.history.canUndo}
             onClick={() => state.history.undo()}
+            title={t('undo')}
           >
             <UndoIcon />
           </IconButton>
           <IconButton
             disabled={!state.history.canRedo}
             onClick={() => state.history.redo()}
+            title={t('redo')}
           >
             <RedoIcon />
           </IconButton>
@@ -122,8 +126,8 @@ export default observer(() => {
         value={selected}
         onChange={(e) => setSelected(e.target.value)}
       >
-        <option value="rowsAndCols">Rows and Columns</option>
-        <option value="widthAndHeight">Width and Height</option>
+        <option value="rowsAndCols">{t('rowsAndCols')}</option>
+        <option value="widthAndHeight">{t('widthAndHeight')}</option>
       </select>
       {selected === "widthAndHeight" && <EditWidthAndHeight />}
       {selected === "rowsAndCols" && <EditRowsAndCols />}
