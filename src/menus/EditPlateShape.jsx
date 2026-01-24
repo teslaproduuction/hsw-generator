@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 
 import useAppState from "../useAppState";
 
-import { InputTitle, BaseInline } from "./common";
+import { InputTitle, BaseInline, Inline, InputBlock } from "./common";
 
 export default observer(
   React.forwardRef(function EditGridForm(_, ref) {
@@ -21,6 +21,12 @@ export default observer(
     const [fillFlatFaces, setFillFlatFaces] = useState(
       state.config.profileConfig.fillFlatFaces
     );
+    const [enableBase, setEnableBase] = useState(
+      state.config.profileConfig.enableBase
+    );
+    const [baseThickness, setBaseThickness] = useState(
+      state.config.profileConfig.baseThickness
+    );
 
     useImperativeHandle(ref, () => {
       return {
@@ -32,6 +38,8 @@ export default observer(
             disableBottom: bottom,
             roundedCorners,
             fillFlatFaces,
+            enableBase,
+            baseThickness,
           };
 
           state.updateProfile(changes);
@@ -106,6 +114,32 @@ export default observer(
           />
           <label htmlFor="fillFlatFaces">Fill flat faces</label>
         </BaseInline>
+
+        <InputTitle as="div" style={{ marginTop: "2em" }}>
+          Base plate
+        </InputTitle>
+        <BaseInline>
+          <input
+            id="enableBase"
+            type="checkbox"
+            checked={enableBase}
+            onChange={(e) => setEnableBase(e.target.checked)}
+          />
+          <label htmlFor="enableBase">Enable base</label>
+        </BaseInline>
+        {enableBase && (
+          <InputBlock title="Base thickness (mm)" htmlFor="baseThickness">
+            <input
+              id="baseThickness"
+              type="number"
+              step="0.1"
+              min="0.1"
+              max="10"
+              value={baseThickness}
+              onChange={(e) => setBaseThickness(parseFloat(e.target.value))}
+            />
+          </InputBlock>
+        )}
       </>
     );
   })
