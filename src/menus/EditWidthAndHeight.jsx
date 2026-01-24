@@ -17,10 +17,10 @@ export default observer(function EditGridForm() {
   const { t } = useTranslation();
 
   const [width, setWidth] = useState(
-    Math.ceil(STRUCTURE.totalWidth(state.config?.rows || 5))
+    Math.ceil(STRUCTURE.totalWidth(state.config?.columns || 7))
   );
   const [height, setHeight] = useState(
-    Math.ceil(STRUCTURE.totalHeight(state.config?.columns || 7))
+    Math.ceil(STRUCTURE.totalHeight(state.config?.rows || 5))
   );
 
   const columns = STRUCTURE.columnsForWidth(width);
