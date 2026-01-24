@@ -7,7 +7,6 @@ import {
   genericSweep,
   makeFace,
   makeSolid,
-  Compound,
 } from "replicad";
 import { honeycombClone } from "./honeycombClone";
 import { HoneycombStructure } from "./HoneycombStructure";
@@ -175,14 +174,12 @@ export function preview({ columns, rows, profileConfig }, { width, height }) {
 export default function honeycomb({ rows, columns, profileConfig }) {
   const { fillFlatFaces = true, enableBase = false, baseThickness = 0.8 } = profileConfig;
 
-  // When fillFlatFaces is false, we need to build complete hexagons at edges
-  // So we pass fillFlatFaces to exteriorProfile to control cutouts
   const outsideProfile = exteriorProfile(
     OUTER_RADIUS,
     drawPolysides(OUTER_RADIUS, 6, 0).rotate(30),
     rows,
     columns,
-    { ...profileConfig, fillFlatFaces }
+    profileConfig
   );
 
   const [outside, outsideBottom, outsideTop] = shellExtrude(
@@ -222,9 +219,12 @@ export default function honeycomb({ rows, columns, profileConfig }) {
 
     mainStructure = makeSolid([outside, top, bottom, ...inside]);
   } else {
-    // Open mode: only walls and honeycomb cells, no top/bottom faces
-    // The outer wall still follows the profile with hexagon cutouts
-    mainStructure = new Compound([outside, ...inside]);
+    // Open mode: fuse outer wall with honeycomb cells
+    // Start with outer wall and fuse all cells
+    mainStructure = outside;
+    inside.forEach(cell => {
+      mainStructure = mainStructure.fuse(cell);
+    });
   }
 
   if (enableBase && baseThickness > 0) {
