@@ -222,11 +222,8 @@ export default function honeycomb({ rows, columns, profileConfig }) {
   }
 
   if (enableBase && baseThickness > 0) {
-    const structure = new HoneycombStructure(OUTER_RADIUS);
-    const baseWidth = structure.totalWidth(columns);
-    const baseHeight = structure.totalHeight(rows);
-
-    const basePlate = drawRectangle(baseWidth, baseHeight)
+    // Use the same profile as the main structure to match edges and corners
+    const basePlate = outsideProfile
       .sketchOnPlane()
       .extrude(-baseThickness);
 
