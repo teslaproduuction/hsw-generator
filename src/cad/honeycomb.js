@@ -172,7 +172,7 @@ export function preview({ columns, rows, profileConfig }, { width, height }) {
 }
 
 export default function honeycomb({ rows, columns, profileConfig }) {
-  const { fillFlatFaces = true } = profileConfig;
+  const { fillFlatFaces = true, enableBase = false, baseThickness = 0.8 } = profileConfig;
 
   const outsideProfile = exteriorProfile(
     OUTER_RADIUS,
@@ -202,6 +202,7 @@ export default function honeycomb({ rows, columns, profileConfig }) {
 
   const inside = honeycombClone(cell, rows, columns, OUTER_RADIUS);
 
+  let mainStructure;
   if (fillFlatFaces) {
     const topFinder = new EdgeFinder().inPlane("XY", HEIGHT);
     const top = makeFace(
@@ -215,8 +216,22 @@ export default function honeycomb({ rows, columns, profileConfig }) {
       inside.map((copy) => assembleWire(bottomFinder.find(copy)))
     );
 
-    return makeSolid([outside, top, bottom, ...inside]);
+    mainStructure = makeSolid([outside, top, bottom, ...inside]);
   } else {
-    return makeSolid([outside, ...inside]);
+    mainStructure = makeSolid([outside, ...inside]);
   }
+
+  if (enableBase && baseThickness > 0) {
+    const structure = new HoneycombStructure(OUTER_RADIUS);
+    const baseWidth = structure.totalWidth(columns);
+    const baseHeight = structure.totalHeight(rows);
+
+    const basePlate = drawRectangle(baseWidth, baseHeight)
+      .sketchOnPlane()
+      .extrude(-baseThickness);
+
+    return mainStructure.fuse(basePlate);
+  }
+
+  return mainStructure;
 }

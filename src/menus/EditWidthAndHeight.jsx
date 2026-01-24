@@ -5,6 +5,7 @@ import { HoneycombStructure } from "../cad/HoneycombStructure";
 import { OUTER_RADIUS } from "../cad/constants";
 
 import useAppState from "../useAppState";
+import { useTranslation } from "../i18n/LanguageContext";
 
 import { InputBlock, Form, SaveButtonRow } from "./common";
 import { Preview } from "../components/Preview";
@@ -13,6 +14,7 @@ const STRUCTURE = new HoneycombStructure(OUTER_RADIUS);
 
 export default observer(function EditGridForm() {
   const state = useAppState();
+  const { t } = useTranslation();
 
   const [width, setWidth] = useState(
     Math.ceil(STRUCTURE.totalWidth(state.config?.rows || 5))
@@ -37,7 +39,7 @@ export default observer(function EditGridForm() {
     <>
       <Form onSubmit={saveChanges}>
         <SaveButtonRow />
-        <InputBlock title="Height (mm)" htmlFor="height">
+        <InputBlock title={`${t('height')} (mm)`} htmlFor="height">
           <input
             id="height"
             type="number"
@@ -47,7 +49,7 @@ export default observer(function EditGridForm() {
             onChange={(e) => setHeight(parseFloat(e.target.value, 10))}
           />
         </InputBlock>
-        <InputBlock title="Width (mm)" htmlFor="width">
+        <InputBlock title={`${t('width')} (mm)`} htmlFor="width">
           <input
             id="width"
             type="number"
@@ -59,7 +61,7 @@ export default observer(function EditGridForm() {
         </InputBlock>
       </Form>
       <div>
-        {rows} rows, {columns} columns
+        {rows} {t('rows')}, {columns} {t('columns')}
       </div>
       <div>
         <Preview

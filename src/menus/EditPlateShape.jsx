@@ -2,12 +2,14 @@ import React, { useState, useImperativeHandle } from "react";
 import { observer } from "mobx-react";
 
 import useAppState from "../useAppState";
+import { useTranslation } from "../i18n/LanguageContext";
 
-import { InputTitle, BaseInline } from "./common";
+import { InputTitle, BaseInline, Inline, InputBlock } from "./common";
 
 export default observer(
   React.forwardRef(function EditGridForm(_, ref) {
     const state = useAppState();
+    const { t } = useTranslation();
 
     const [left, setLeft] = useState(state.config.profileConfig.disableLeft);
     const [right, setRight] = useState(state.config.profileConfig.disableRight);
@@ -21,6 +23,12 @@ export default observer(
     const [fillFlatFaces, setFillFlatFaces] = useState(
       state.config.profileConfig.fillFlatFaces
     );
+    const [enableBase, setEnableBase] = useState(
+      state.config.profileConfig.enableBase
+    );
+    const [baseThickness, setBaseThickness] = useState(
+      state.config.profileConfig.baseThickness
+    );
 
     useImperativeHandle(ref, () => {
       return {
@@ -32,6 +40,8 @@ export default observer(
             disableBottom: bottom,
             roundedCorners,
             fillFlatFaces,
+            enableBase,
+            baseThickness,
           };
 
           state.updateProfile(changes);
@@ -42,7 +52,7 @@ export default observer(
     return (
       <>
         <InputTitle as="div" style={{ marginTop: "2em" }}>
-          Flat borders
+          {t('flatBorders')}
         </InputTitle>
         <BaseInline>
           <input
@@ -51,7 +61,7 @@ export default observer(
             checked={left}
             onChange={(e) => setLeft(e.target.checked)}
           />
-          <label htmlFor="left">Left</label>
+          <label htmlFor="left">{t('left')}</label>
         </BaseInline>
         <BaseInline>
           <input
@@ -60,7 +70,7 @@ export default observer(
             checked={top}
             onChange={(e) => setTop(e.target.checked)}
           />
-          <label htmlFor="top">Top</label>
+          <label htmlFor="top">{t('top')}</label>
         </BaseInline>
         <BaseInline>
           <input
@@ -69,7 +79,7 @@ export default observer(
             checked={right}
             onChange={(e) => setRight(e.target.checked)}
           />
-          <label htmlFor="right">Right</label>
+          <label htmlFor="right">{t('right')}</label>
         </BaseInline>
         <BaseInline>
           <input
@@ -78,11 +88,11 @@ export default observer(
             checked={bottom}
             onChange={(e) => setBottom(e.target.checked)}
           />
-          <label htmlFor="bottom">Bottom</label>
+          <label htmlFor="bottom">{t('bottom')}</label>
         </BaseInline>
 
         <InputTitle as="div" style={{ marginTop: "2em" }}>
-          Corner style
+          {t('cornerStyle')}
         </InputTitle>
         <BaseInline>
           <input
@@ -91,11 +101,11 @@ export default observer(
             checked={roundedCorners}
             onChange={(e) => setRoundedCorners(e.target.checked)}
           />
-          <label htmlFor="roundedCorners">Rounded corners</label>
+          <label htmlFor="roundedCorners">{t('roundedCorners')}</label>
         </BaseInline>
 
         <InputTitle as="div" style={{ marginTop: "2em" }}>
-          Faces
+          {t('faces')}
         </InputTitle>
         <BaseInline>
           <input
@@ -104,8 +114,34 @@ export default observer(
             checked={fillFlatFaces}
             onChange={(e) => setFillFlatFaces(e.target.checked)}
           />
-          <label htmlFor="fillFlatFaces">Fill flat faces</label>
+          <label htmlFor="fillFlatFaces">{t('fillFlatFaces')}</label>
         </BaseInline>
+
+        <InputTitle as="div" style={{ marginTop: "2em" }}>
+          {t('basePlate')}
+        </InputTitle>
+        <BaseInline>
+          <input
+            id="enableBase"
+            type="checkbox"
+            checked={enableBase}
+            onChange={(e) => setEnableBase(e.target.checked)}
+          />
+          <label htmlFor="enableBase">{t('enableBase')}</label>
+        </BaseInline>
+        {enableBase && (
+          <InputBlock title={t('baseThickness')} htmlFor="baseThickness">
+            <input
+              id="baseThickness"
+              type="number"
+              step="0.1"
+              min="0.1"
+              max="10"
+              value={baseThickness}
+              onChange={(e) => setBaseThickness(parseFloat(e.target.value))}
+            />
+          </InputBlock>
+        )}
       </>
     );
   })

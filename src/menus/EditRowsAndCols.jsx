@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import { observer } from "mobx-react";
 
 import useAppState from "../useAppState";
+import { useTranslation } from "../i18n/LanguageContext";
 
 import { InputBlock, Form, SaveButtonRow } from "./common";
 
@@ -13,6 +14,7 @@ const STRUCTURE = new HoneycombStructure(OUTER_RADIUS);
 
 export default observer(function EditGridForm() {
   const state = useAppState();
+  const { t } = useTranslation();
 
   const [rows, setRows] = useState(state.config?.rows || 5);
   const [columns, setColumns] = useState(state.config?.columns || 7);
@@ -34,7 +36,7 @@ export default observer(function EditGridForm() {
     <>
       <Form onSubmit={saveChanges}>
         <SaveButtonRow />
-        <InputBlock title="Columns" htmlFor="cols">
+        <InputBlock title={t('columns')} htmlFor="cols">
           <input
             id="cols"
             type="number"
@@ -44,7 +46,7 @@ export default observer(function EditGridForm() {
             onChange={(e) => setColumns(parseInt(e.target.value, 10))}
           />
         </InputBlock>
-        <InputBlock title="Rows" htmlFor="rows">
+        <InputBlock title={t('rows')} htmlFor="rows">
           <input
             id="rows"
             type="number"
@@ -56,10 +58,10 @@ export default observer(function EditGridForm() {
         </InputBlock>
       </Form>
       <hr />
-      <InputBlock title="Total width">
+      <InputBlock title={t('totalWidth')}>
         {STRUCTURE.totalWidth(columns).toFixed(2)}mm
       </InputBlock>
-      <InputBlock title="Total height">
+      <InputBlock title={t('totalHeight')}>
         {STRUCTURE.totalHeight(rows).toFixed(2)}mm
       </InputBlock>
       <EditPlateShape ref={shapeEditor} />
