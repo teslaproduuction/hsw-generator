@@ -165,8 +165,18 @@ export const honeycombProfile = (nRows, nColumns, profileConfig) => {
 };
 
 export function preview({ columns, rows, profileConfig }, { width, height }) {
+  // Use default values if profileConfig is undefined
+  const config = profileConfig || {
+    disableLeft: false,
+    disableRight: false,
+    disableTop: false,
+    disableBottom: false,
+    roundedCorners: true,
+    fillFlatFaces: true,
+  };
+
   return [
-    honeycombProfile(rows, columns, profileConfig),
+    honeycombProfile(rows, columns, config),
     drawRectangle(width, height),
   ];
 }
