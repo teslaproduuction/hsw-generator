@@ -6,6 +6,7 @@ import "./index.css"
 
 import { AppStateContext } from "./useAppState";
 import AppState from "./state";
+import { LanguageProvider } from "./i18n/LanguageContext";
 
 // This is here to compensate for a bug in vite
 import "replicad-opencascadejs/src/replicad_single.wasm?url";
@@ -14,9 +15,11 @@ const state = AppState.create();
 
 ReactDOM.render(
   <React.StrictMode>
-    <AppStateContext.Provider value={state}>
-      <App />
-    </AppStateContext.Provider>
+    <LanguageProvider>
+      <AppStateContext.Provider value={state}>
+        <App />
+      </AppStateContext.Provider>
+    </LanguageProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );

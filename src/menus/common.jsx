@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { observer } from "mobx-react";
 
 import useAppState from "../useAppState";
+import { useTranslation } from "../i18n/LanguageContext";
 
 export const InputTitle = styled.label`
   font-variant: small-caps;
@@ -74,11 +75,12 @@ export const Form = styled.form`
 
 export const SaveButtonRow = observer(({ saveDisabled }) => {
   const state = useAppState();
+  const { t } = useTranslation();
 
   return (
     <SaveButtons>
       <button role="submit" disabled={state.processing || saveDisabled}>
-        Apply
+        {t('apply')}
       </button>
     </SaveButtons>
   );

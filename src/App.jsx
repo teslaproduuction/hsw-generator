@@ -3,6 +3,8 @@ import styled from "styled-components";
 
 import Menu from "./Menu.jsx";
 import Viewer from "./Viewer.jsx";
+import { LanguageSwitcher } from "./components/LanguageSwitcher";
+import { useTranslation } from "./i18n/LanguageContext";
 
 const Main = styled.div`
   display: grid;
@@ -73,11 +75,14 @@ const Footer = styled.div`
 `;
 
 export default React.memo(function ReplicadApp() {
+  const { t } = useTranslation();
+
   return (
     <>
       <Main>
         <div>
-          <span>Honeycomb Storage Wall</span>
+          <span>{t('title')}</span>
+          <LanguageSwitcher />
         </div>
         <Menu />
         <Viewer />
@@ -86,7 +91,7 @@ export default React.memo(function ReplicadApp() {
             href="https://github.com/teslaproduuction/hsw-generator"
             target="_blank"
           >
-            GitHub
+            {t('github')}
           </a>
         </Footer>
       </Main>
